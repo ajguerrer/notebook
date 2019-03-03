@@ -1,0 +1,322 @@
+:root{
+  --MAIN-BG-color: #262626;
+  --MAIN-TEXT-color:#dab997; /* Color of text by default */
+  --MAIN-TITLES-TEXT-color: #8a8a8a; /* Color of titles h2-h3-h4-h5 */
+  --MAIN-LINK-color:#85ad85; /* Color of links */
+  --MAIN-LINK-HOVER-color:#9dbd9d; /* Color of hovered links */
+  --MAIN-ANCHOR-color: #8a8a8a; /* color of anchors on titles */
+  
+  --MENU-HEADER-BG-color:#85ad85; /* Background color of menu header */
+  --MENU-HEADER-BORDER-color:#6a8a6a; /*Color of menu header border */ 
+  
+  --MENU-SEARCH-BG-color:#3a3a3a; /* Search field background color (by default borders + icons) */
+  --MENU-SEARCH-BOX-color: #262626; /* Override search field border color */
+  --MENU-SEARCH-BOX-ICONS-color: #dab997; /* Override search field icons color */
+  
+  --MENU-SECTIONS-ACTIVE-BG-color:#3a3a3a; /* Background color of the active section and its childs */
+  --MENU-SECTIONS-BG-color:#3a3a3a; /* Background color of other sections */
+  --MENU-SECTIONS-LINK-color: #dab997; /* Color of links in menu */
+  --MENU-SECTIONS-LINK-HOVER-color: #85ad85;  /* Color of links in menu, when hovered */
+  --MENU-SECTION-ACTIVE-CATEGORY-color: #9dbd9d; /* Color of active category text */
+  --MENU-SECTION-ACTIVE-CATEGORY-BG-color: #4e4e4e; /* Color of background for the active category (only) */
+  
+  --MENU-VISITED-color: #9dbd9d; /* Color of 'page visited' icons in menu */
+  --MENU-SECTION-HR-color: #85ad85; /* Color of <hr> separator in menu */
+  
+  --PAGE-TITLE-color: #85ad85;
+  --TOP-BAR-BG-color: #3a3a3a;
+  --TABLE-HEADER-BG-color: #3a3a3a;
+  --BLOCKQUOTE-color: #85ad85;
+
+  --NOTICE-BG-color: #3a3a3a;
+  --NOTICE-color: #ebdbb2;
+
+  --BLUE-color: #83adad;
+  --ORANGE-color: #ff8700;
+  --GREEN-color: #afaf00;
+  --RED-color: #d75f5f;
+  --YELLOW-color: #ffaf00;
+  --PURPLE-color: #d485ad;
+  --AQUA-color: #85ad85;
+  --GRAY-color: #8a8a8a;
+
+}
+
+body {
+  color: var(--MAIN-TEXT-color) !important;
+  background: var(--MAIN-BG-color);
+}
+
+textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="text"]:focus, input[type="url"]:focus, input[type="color"]:focus, input[type="date"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, select[multiple=multiple]:focus {
+  border-color: none;
+  box-shadow: none;
+}
+
+h1 {
+  color: var(--PAGE-TITLE-color);
+}
+
+h2, h3, h4, h5 {
+  color: var(--MAIN-TITLES-TEXT-color);
+  font-weight: 100;
+}
+
+a {
+  color: var(--MAIN-LINK-color);
+}
+
+.anchor {
+  color: var(--MAIN-ANCHOR-color);
+}
+
+a:hover {
+  color: var(--MAIN-LINK-HOVER-color);
+}
+
+#sidebar ul li.visited > a .read-icon {
+	color: var(--MENU-VISITED-color);
+}
+
+#top-bar {
+  background: var(--TOP-BAR-BG-color);
+}
+
+.progress {
+  background: var(--MENU-SECTIONS-BG-color);
+  border: 1px solid var(--MAIN-TEXT-color);
+}
+
+#body a.highlight:after {
+  display: block;
+  content: "";
+  height: 1px;
+  width: 0%;
+  -webkit-transition: width 0.5s ease;
+  -moz-transition: width 0.5s ease;
+  -ms-transition: width 0.5s ease;
+  transition: width 0.5s ease;
+  background-color: var(--MAIN-LINK-HOVER-color);
+}
+
+#body a.nav:hover {
+  background: transparent;
+}
+
+#sidebar {
+	background-color: var(--MENU-SECTIONS-BG-color);
+}
+#sidebar #header-wrapper {
+  background: var(--MENU-HEADER-BG-color);
+  color: var(--MENU-SEARCH-BOX-color);
+  border-color: var(--MENU-HEADER-BORDER-color);
+}
+#sidebar .searchbox {
+	border-color: var(--MENU-SEARCH-BOX-color);
+  background: var(--MENU-SEARCH-BG-color);
+}
+#sidebar ul.topics > li.parent, #sidebar ul.topics > li.active {
+  background: var(--MENU-SECTIONS-ACTIVE-BG-color);
+}
+#sidebar .searchbox * {
+  color: var(--MENU-SEARCH-BOX-ICONS-color);
+}
+
+#sidebar a {
+  color: var(--MENU-SECTIONS-LINK-color);
+}
+
+#sidebar a:hover {
+  color: var(--MENU-SECTIONS-LINK-HOVER-color);
+}
+
+#sidebar ul li.active > a {
+  background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color);
+  color: var(--MENU-SECTION-ACTIVE-CATEGORY-color) !important;
+}
+
+#sidebar hr {
+  border-color: var(--MENU-SECTION-HR-color);
+}
+
+table, td {
+  border: 1px solid var(--TABLE-HEADER-BG-color);
+}
+
+th {
+  background: var(--TABLE-HEADER-BG-color);
+}
+
+blockquote {
+  border-left: 10px solid var(--BLOCKQUOTE-color);
+}
+
+blockquote p {
+  color: var(--BLOCKQUOTE-color);
+}
+
+code {
+  color: var(--MAIN-TEXT-color);
+  background: var(--MAIN-BG-color);
+  border: none;
+}
+
+.copy-to-clipboard {
+  display: none;
+}
+
+mark {
+  background: var(--YELLOW-color);
+  color: var(--MAIN-BG-color);
+}
+
+hr,
+#chapter h1 {
+  border-bottom: 4px solid var(--MAIN-TITLES-TEXT-color);
+}
+
+.logo {
+  height: 90px;
+  fill: var(--MAIN-BG-color);
+  display: flex;
+  font-size: 34px;
+  padding: 0px 35px;
+}
+
+div.notices.note p {
+  border-top: 30px solid var(--BLUE-color);
+}
+
+div.notices.info p {
+  border-top: 30px solid var(--ORANGE-color);
+}
+
+div.notices.tip p {
+  border-top: 30px solid var(--GREEN-color);
+}
+
+div.notices.warning p {
+  border-top: 30px solid var(--RED-color);
+}
+
+div.notices p {
+  background: var(--NOTICE-BG-color) !important;
+  color: var(--NOTICE-color) !important;
+}
+
+div.notices p:first-child:before,
+div.notices p:first-child:after {
+  color: var(--MAIN-BG-color);
+}
+
+div.notices p:first-child:after {
+  font-weight: 400
+}
+
+
+#body-inner pre {
+  background: var(--MAIN-BG-color);
+  white-space: pre;
+}
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: var(--MAIN-BG-color);
+}
+
+.hljs,
+.hljs-subst {
+  color: var(--MAIN-TEXT-color);
+}
+
+/* Gruvbox Red */
+.hljs-deletion,
+.hljs-formula,
+.hljs-keyword,
+.hljs-link,
+.hljs-selector-tag {
+  color: var(--RED-color);
+}
+
+/* Gruvbox Blue */
+.hljs-built_in,
+.hljs-emphasis,
+.hljs-name,
+.hljs-quote,
+.hljs-strong,
+.hljs-title,
+.hljs-variable {
+  color: var(--BLUE-color);
+}
+
+/* Gruvbox Yellow */
+.hljs-attr,
+.hljs-params,
+.hljs-template-tag,
+.hljs-type {
+  color: var(--YELLOW-color);
+}
+
+/* Gruvbox Purple */
+.hljs-builtin-name,
+.hljs-doctag,
+.hljs-literal,
+.hljs-number {
+  color: var(--PURPLE-color);
+}
+
+/* Gruvbox Orange */
+.hljs-code,
+.hljs-meta,
+.hljs-regexp,
+.hljs-selector-id,
+.hljs-template-variable {
+  color: var(--ORANGE-color);
+}
+
+/* Gruvbox Green */
+.hljs-addition,
+.hljs-meta-string,
+.hljs-section,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-string,
+.hljs-symbol {
+  color: var(--GREEN-color);
+}
+
+/* Gruvbox Aqua */
+.hljs-attribute,
+.hljs-bullet,
+.hljs-class,
+.hljs-function,
+.hljs-function .hljs-keyword,
+.hljs-meta-keyword,
+.hljs-selector-pseudo,
+.hljs-tag {
+  color: var(--AQUA-color);
+}
+
+/* Gruvbox Gray */
+.hljs-comment {
+  color: var(--GRAY-color);
+}
+
+/* Gruvbox Purple */
+.hljs-link_label,
+.hljs-literal,
+.hljs-number {
+  color: var(--PURPLE-color);
+}
+
+.hljs-comment,
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-section,
+.hljs-strong,
+.hljs-tag {
+  font-weight: bold;
+}
