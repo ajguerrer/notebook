@@ -1,28 +1,28 @@
-:root{
+:root {
   --MAIN-BG-color: #262626;
   --MAIN-TEXT-color:#dab997; /* Color of text by default */
   --MAIN-TITLES-TEXT-color: #8a8a8a; /* Color of titles h2-h3-h4-h5 */
   --MAIN-LINK-color:#85ad85; /* Color of links */
   --MAIN-LINK-HOVER-color:#9dbd9d; /* Color of hovered links */
   --MAIN-ANCHOR-color: #8a8a8a; /* color of anchors on titles */
-  
+
   --MENU-HEADER-BG-color:#85ad85; /* Background color of menu header */
-  --MENU-HEADER-BORDER-color:#6a8a6a; /*Color of menu header border */ 
-  
+  --MENU-HEADER-BORDER-color:#6a8a6a; /*Color of menu header border */
+
   --MENU-SEARCH-BG-color:#3a3a3a; /* Search field background color (by default borders + icons) */
   --MENU-SEARCH-BOX-color: #262626; /* Override search field border color */
   --MENU-SEARCH-BOX-ICONS-color: #dab997; /* Override search field icons color */
-  
+
   --MENU-SECTIONS-ACTIVE-BG-color:#3a3a3a; /* Background color of the active section and its childs */
   --MENU-SECTIONS-BG-color:#3a3a3a; /* Background color of other sections */
   --MENU-SECTIONS-LINK-color: #dab997; /* Color of links in menu */
   --MENU-SECTIONS-LINK-HOVER-color: #85ad85;  /* Color of links in menu, when hovered */
   --MENU-SECTION-ACTIVE-CATEGORY-color: #9dbd9d; /* Color of active category text */
   --MENU-SECTION-ACTIVE-CATEGORY-BG-color: #4e4e4e; /* Color of background for the active category (only) */
-  
+
   --MENU-VISITED-color: #9dbd9d; /* Color of 'page visited' icons in menu */
   --MENU-SECTION-HR-color: #85ad85; /* Color of <hr> separator in menu */
-  
+
   --PAGE-TITLE-color: #85ad85;
   --TOP-BAR-BG-color: #3a3a3a;
   --TABLE-HEADER-BG-color: #3a3a3a;
@@ -39,7 +39,6 @@
   --PURPLE-color: #d485ad;
   --AQUA-color: #85ad85;
   --GRAY-color: #8a8a8a;
-
 }
 
 body {
@@ -186,16 +185,32 @@ div.notices.note p {
   border-top: 30px solid var(--BLUE-color);
 }
 
+div.notices.note pre {
+  border-left: 7px solid var(--BLUE-color);
+}
+
 div.notices.info p {
   border-top: 30px solid var(--ORANGE-color);
 }
 
+div.notices.info pre {
+  border-left: 7px solid var(--ORANGE-color);
+}
+
 div.notices.tip p {
-  border-top: 30px solid var(--GREEN-color);
+  border-top: 30px solid var(--AQUA-color);
+}
+
+div.notices.tip pre {
+  border-left: 7px solid var(--AQUA-color);
 }
 
 div.notices.warning p {
   border-top: 30px solid var(--RED-color);
+}
+
+div.notices.warning pre {
+  border-left: 7px solid var(--RED-color);
 }
 
 div.notices p {
@@ -203,19 +218,27 @@ div.notices p {
   color: var(--NOTICE-color) !important;
 }
 
+div.notices pre {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 div.notices p:first-child:before,
-div.notices p:first-child:after {
+div.notices p:first-child:after,
+div.notices pre:first-child:before,
+div.notices pre:first-child:after{
   color: var(--MAIN-BG-color);
 }
 
-div.notices p:first-child:after {
-  font-weight: 400
+div.notices p:first-child:after,
+div.notices pre:first-child:after {
+  font-weight: 400;
 }
-
 
 #body-inner pre {
   background: var(--MAIN-BG-color);
   white-space: pre;
+  line-height: 20px;
 }
 
 .hljs {
