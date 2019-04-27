@@ -407,7 +407,7 @@ return width / height;
 
 Avoid using comments to explain *what* code does. Use comments to explain *why* code does something.
 
-## To Many Comments on Your Code Reviews?
+## Too Many Comments on Your Code Reviews?
 
 *June 19, 2017* - [original
 post](https://testing.googleblog.com/2017/06/code-health-too-many-comments-on-your.html)
@@ -437,7 +437,7 @@ Deeply nested code is error-prone and hurts readability.
 Response response = server.Call(request);
 
 if (response.GetStatus() == Status::kOk) {
-  if (response.GetAuthorizedUser()) {
+  if (!IsAuthorized(response.GetUser())) {
     if (response.GetEnc() == "utf-8") {
       std::vector<Row> rows = response.GetRows();
       if (!rows.empty()) {
@@ -467,11 +467,11 @@ if (response.GetStatus() != Status::kOk) {
   throw RpcException(response.GetStatus());
 }
 
-if (!response.GetAuthorizedUser()) {
+if (!IsAuthorized(response.GetUser())) {
   throw ValueException('wrong encoding');
 }
 
-if (!response.GetEnc() != "utf-8") {
+if (response.GetEnc() != "utf-8") {
   throw AuthException('unauthorized');
 }
 
@@ -486,4 +486,106 @@ return avg;
 {{% /notice %}}
 
 Can you spot the bug now?
+
+## Keep Cause and Effect Clear
+
+*January 31, 2017* - [original
+post](https://testing.googleblog.com/2017/01/testing-on-toilet-keep-cause-and-effect.html)
+
+It's difficult to reason about a test when the cause is hidden far away from the effect.
+
+{{% notice warning %}}
+```cpp
+class TallyTest : public ::testing::Test {
+protected:
+  void SetUp() override {
+    tally_.Increment("key1", 8);
+    tally_.Increment("key2", 100);
+    tally_.Increment("key1", 0);
+    tally_.Increment("key1", 1);
+  }
+
+  Tally tally_;
+}
+// 200 lines of code
+
+TEST_F(TallyTest, IncrementExistingKey) {
+  EXPECT_EQ(9, tally_.Get("key1"));
+}
+```
+{{% /notice %}}
+
+Write tests where the effects immediately follow the causes.
+
+{{% notice tip %}}
+```cpp
+class TallyTest : public ::testing::Test {
+protected:
+  Tally tally_;
+}
+
+TEST_F(TallyTest, NewKey) {
+  tally_.Increment("key", 100);
+  EXPECT_EQ(100, tally_.Get("key"));
+}
+
+TEST_F(TallyTest, ExistingKey) {
+  tally_.Increment("key", 8);
+  tally_.Increment("key", 1);
+  EXPECT_EQ(9, tally_.Get("key"));
+}
+
+TEST_F(TallyTest, IncrementByZeroDoesNothing) {
+  tally_.Increment("key", 8);
+  tally_.Increment("key", 0);
+  EXPECT_EQ(8, tally_.Get("key"));
+}
+```
+{{% /notice %}}
+
+It may require a bit more code, but it's easier to read and maintain.
+
+## What Makes a Good End-to-End Test?
+
+*September, 2016* - [original
+post](https://testing.googleblog.com/2016/09/testing-on-toilet-what-makes-good-end.html)
+
+End-to-end tests give confidence about the health of the system when it is in a near production
+state, but they tend to be more flaky and expensive to maintain.
+
+To be cost effective, end-to-end tests should focus on aspects of the system that cannot be
+evaluated by smaller tests. Minor and/or frequently changing details like error messages or visual
+layouts should not effect the test.
+
+## Change-Detector Tests Considered Harmful
+
+*January 27, 2015* - [original
+post](https://testing.googleblog.com/2015/01/testing-on-toilet-change-detector-tests.html)
+
+Tests that break in response to any change to production code without verifying correct behavior
+only add to maintenance costs without catching defects.
+
+{{% notice warning %}}
+```cpp
+void Processor::Process(Work w) {
+  first_part_.Process(w);
+  second_part_.Process(w);
+}
+
+TEST(ProcessorTest, ProcessWork) {
+  MockFirstPart part1;
+  MockSecondPart part2;
+  Processor p(part1, part2);
+  Work w;
+
+  EXPECT_CALL(part1, Process(w));
+  EXPECT_CALL(part2, Process(w));
+
+  p.Process(w);
+}
+```
+{{% /notice %}}
+
+Tests like these should either be re-written or deleted.
+
 
