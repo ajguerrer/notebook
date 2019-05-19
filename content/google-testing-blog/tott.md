@@ -588,4 +588,56 @@ TEST(ProcessorTest, ProcessWork) {
 
 Tests like these should either be re-written or deleted.
 
+## Prefer Testing Public APIs Over Implementation-Detail Classes
+
+*January 14, 2015* - [original
+post](https://testing.googleblog.com/2015/01/testing-on-toilet-prefer-testing-public.html)
+
+Public APIs can be called by many users. Implementation details are only called by public APIs. 
+If the public APIs are well tested, as they should be, then the implementation details will get 
+tested by association.
+
+Heavy testing against implementation details can cause a couple problems:
+
+- Unlike public APIs, implementation details are vulnerable to refactoring. Tests for implementation
+  details can fail even though the behavior from the public API is fine.
+- Testing implementation details can give false confidence. Even if an implementation detail is well
+  tested, that doesn't mean the pubic API behaves properly.
+
+## Writing Descriptive Test Names
+
+*October 16, 2014* - [original
+post](https://testing.googleblog.com/2014/10/testing-on-toilet-writing-descriptive.html)
+
+Vague test names make it hard to keep track of what is tested.
+
+{{% notice warning %}}
+```cpp
+TEST_F(IsUserLockedOutTest, InvalidLogin) {
+  authenticator_.Authenticate(username_, password_);
+  EXPECT_FALSE(authenticator_.IsUserLockedOut(username_));
+  
+  authenticator_.Authenticate(username_, password_);
+  EXPECT_FALSE(authenticator_.IsUserLockedOut(username_));
+
+  authenticator_.Authenticate(username_, password_);
+  EXPECT_TRUE(authenticator_.IsUserLockedOut(username_));
+}
+```
+{{% /notice %}}
+
+Descriptive test names make it easy to tell what behavior is broken without looking at code. Also,
+test names naturally become longer making for a good indicator that a test needs to be split apart.
+
+
+{{% notice tip %}}
+```cpp
+TEST_F(IsUserLockedOutTest, ShouldLockOutUserAfterThreeInvalidLoginAttempts) {
+ // ...
+}
+```
+{{% /notice %}}
+
+You should be able to understand the behavior being tested just by reading the test name. Make sure
+the test names contain both the scenario being tested and the expected outcome.
 
