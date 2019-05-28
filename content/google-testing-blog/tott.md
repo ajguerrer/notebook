@@ -2,6 +2,9 @@
 title: "Testing on the Toilet"
 ---
 
+This page contains portable (potable?) bits of testing best-practices that will keep you riveted to
+your seat.
+
 ## Exercise Service Call Contracts in Tests
 
 *November 27, 2018* -
@@ -61,12 +64,12 @@ Tests become fragile when they expect exact values on irrelevant arguments.
 {{% notice warning %}}
 ```cpp
 TEST_F(DisplayGreetingTest, ShowSpecialGreetingOnNewYearsDay) {
-  fakeClock_.SetTime(kNewYearsDay);
-  fakeUser_.SetName("Fake User");
-  EXPECT_CALL(mockUserPrompter_, UpdatePrompt("Hi Fake User! Happy New Year!",
-                                              TitleBar("2018-01-01"),
-                                              PromptStyle::kNormal));
-  userGreeter_.DisplayGreeting();
+  fake_clock_.SetTime(kNewYearsDay);
+  fake_user_.SetName("Fake User");
+  EXPECT_CALL(mock_user_Prompter_, UpdatePrompt("Hi Fake User! Happy New Year!",
+                                                TitleBar("2018-01-01"),
+                                                PromptStyle::kNormal));
+  user_greeter_.DisplayGreeting();
 }
 ```
 {{% /notice %}}
@@ -77,15 +80,15 @@ behavior being tested.
 {{% notice tip %}}
 ```cpp
 TEST_F(DisplayGreetingTest, ShowSpecialGreetingOnNewYearsDay) {
-  fakeClock_.SetTime(kNewYearsDay);
-  EXPECT_CALL(mockUserPrompter_, UpdatePrompt(HasSubstr("Happy New Year!"), _, _));
-  userGreeter_.DisplayGreeting();
+  fake_clock_.SetTime(kNewYearsDay);
+  EXPECT_CALL(mock_user_prompter_, UpdatePrompt(HasSubstr("Happy New Year!"), _, _));
+  user_greeter_.DisplayGreeting();
 }
 
 TEST_F(DisplayGreetingTest, RenderUserName) {
-  fakeUser_.SetName("Fake User");
-  EXPECT_CALL(mockUserPrompter_, UpdatePrompt(HasSubstr("Fake User"), _, _));
-  userGreeter_.DisplayGreeting();
+  fake_user_.SetName("Fake User");
+  EXPECT_CALL(mock_user_prompter_, UpdatePrompt(HasSubstr("Fake User"), _, _));
+  user_greeter_.DisplayGreeting();
 }
 ```
 {{% /notice %}}
@@ -101,7 +104,7 @@ failure.
 {{% notice warning %}}
 ```cpp
 TEST_F(BankAcountTest, WidthdrawFromAccount) {
-  Transaction transaction = acceunt_.Deposit(Usd(5));
+  Transaction transaction = account_.Deposit(Usd(5));
   clock_.AdvanceTime(kMinTimeToSettle);
   account_.Settle(transaction);
 
@@ -205,7 +208,7 @@ Company bankrupt = Company::Builder{}.SetBankruptcyDate(kPastDate).Build();
 Company default_company = Company::Builder{}.Build();
 
 class Company::Builder {
-public:
+ public:
   Builder& SetEmployees(int n) { employees_ = n; return *this; }
   Builder& SetBoardMembers(int n) { board_members_ = n; return *this; }
   Builder& SetBankruptcyDate(BankruptcyDate d) { date_ = d; return *this; }
@@ -213,7 +216,7 @@ public:
 
   Company Build() const { return Company(employees_, board_members_, date_, type_); }
 
-private:
+ private:
   int employees_ = 0;
   int board_members_ = 0;
   BankruptcyDate date_ = kBeforeDate;
@@ -316,8 +319,8 @@ Don't mention the type in the variable name. It's OK for the name and the type m
 
 {{% notice warning %}}
 ```cpp
-std::string nameString;
-std::list<std::time_t> holidayDateList;
+std::string name_string;
+std::list<std::time_t> holiday_date_list;
 ```
 {{% /notice %}}
 
@@ -396,11 +399,11 @@ price = num_items * item_price;
 discount = std::min(5, num_items) * item_price * 0.1;
 final_price = price - discount;
 
-filterOffensiveWords(words);
+FilterOffensiveWords(words);
 
 Pixels width = ...;
 
-checkArgument(height > 0);
+CheckArgument(height > 0);
 return width / height;
 ```
 {{% /notice %}}
@@ -593,8 +596,8 @@ Tests like these should either be re-written or deleted.
 *January 14, 2015* - [original
 post](https://testing.googleblog.com/2015/01/testing-on-toilet-prefer-testing-public.html)
 
-Public APIs can be called by many users. Implementation details are only called by public APIs. 
-If the public APIs are well tested, as they should be, then the implementation details will get 
+Public APIs can be called by many users. Implementation details are only called by public APIs.
+If the public APIs are well tested, as they should be, then the implementation details will get
 tested by association.
 
 Heavy testing against implementation details can cause a couple problems:
@@ -616,7 +619,7 @@ Vague test names make it hard to keep track of what is tested.
 TEST_F(IsUserLockedOutTest, InvalidLogin) {
   authenticator_.Authenticate(username_, password_);
   EXPECT_FALSE(authenticator_.IsUserLockedOut(username_));
-  
+
   authenticator_.Authenticate(username_, password_);
   EXPECT_FALSE(authenticator_.IsUserLockedOut(username_));
 
@@ -627,8 +630,7 @@ TEST_F(IsUserLockedOutTest, InvalidLogin) {
 {{% /notice %}}
 
 Descriptive test names make it easy to tell what behavior is broken without looking at code. Also,
-test names naturally become longer making for a good indicator that a test needs to be split apart.
-
+the length of a good test name helps indicate when a test needs to be split apart.
 
 {{% notice tip %}}
 ```cpp
@@ -638,6 +640,307 @@ TEST_F(IsUserLockedOutTest, ShouldLockOutUserAfterThreeInvalidLoginAttempts) {
 ```
 {{% /notice %}}
 
-You should be able to understand the behavior being tested just by reading the test name. Make sure
-the test names contain both the scenario being tested and the expected outcome.
+A test's name should be all you need to know to understand the behavior being tested. Make sure
+the name contains both the scenario being tested and the expected outcome.
+
+## Don't Put Logic in Tests
+
+*July 31, 2014* - [original
+post](https://testing.googleblog.com/2014/07/testing-on-toilet-dont-put-logic-in.html)
+
+Tests should be simple by stating I/O directly rather than computing them.
+
+{{% notice warning %}}
+```cpp
+TEST(NavigatorTest, ShouldNavigateToPhotosPage) {
+  const std::string baseUrl = "http://plus.google.com/";
+  Navigator nav(baseUrl);
+  nav.GoToPhotosPage();
+  EXPECT_EQ(baseUrl + "/u/0/photos", nav.GetCurrentUrl());
+}
+```
+{{% /notice %}}
+
+Even a simple string concatenation can lead to bugs.
+
+{{% notice tip %}}
+```cpp
+TEST(NavigatorTest, ShouldNavigateToPhotosPage) {
+  Navigator nav("http://plug.google.com/");
+  nav.GoToPhotosPage();
+  EXPECT_EQ("http://plus.google.com//u/0/photos", nav.GetCurrentUrl());
+}
+```
+{{% /notice %}}
+
+If a test requires logic, move that logic out of the test body into utilities and helper functions
+and write tests for them too.
+
+## Risk-Driven Testing
+
+*May 30, 2014* - [original
+post](https://testing.googleblog.com/2014/05/testing-on-toilet-risk-driven-testing.html)
+
+Blindly writing tests can lead to a false sense of security or wasted effort. Before writing tests,
+think about testing. Small tests are cheap, larger tests protect core use-cases and integration.
+Manual testing can sometimes be the cheapest, most effective option.
+
+## Effective Testing
+
+*May 7, 2014* - [original
+post](https://testing.googleblog.com/2014/05/testing-on-toilet-effective-testing.html)
+
+To be effective, a test maximizes three important qualities:
+
+- **Fidelity** - Sensitive to defects in the code under test.
+- **Resilience** - Fails only when a breaking change is made to the code under test.
+- **Precision** - Upon failure reports exactly where the defect lies.
+
+## Test Behaviors, Not Methods
+
+A single method can exhibit many behaviors. Likewise, a single behavior can span multiple methods.
+
+It can be harmful to think that tests and public methods should have a 1:1 relationship.
+
+{{% notice warning %}}
+``` cpp
+TEST_F(TransactionProcessorTest, ProcessTransaction) {
+  User user = NewUserWithBalance(kLowBalanceThreshold + Dollars(2));
+  transaction_processor_.ProcessTransaction(user, Transaction("Pile of Beanie Babies", Dollars(3)));
+  EXPECT_THAT(ui_.GetText(), HasSubstr("You bought a Pile of Beanie Babies"));
+  EXPECT_EQ(user.GetEmails().size(), 1);
+  EXPECT_STREQ(user.GetEmails().at(0).GetSubject(), "Your balance is low");
+}
+```
+{{% /notice %}}
+
+Each test should verify one behavior. Each method may take several tests to verify.
+
+{{% notice tip %}}
+``` cpp
+TEST_F(TransactionProcessorTest, ShouldDisplayNotification) {
+  transaction_processor_.ProcessTransaction(User(), Transaction("Pile of Beanie Babies"));
+  EXPECT_THAT(ui_.GetText(), HasSubstr("You bought a Pile of Beanie Babies"));
+}
+
+TEST_F(TransactionProcessorTest, ShouldSendEmailWhenBalanceIsLow) {
+  User user = NewUserWithBalance(kLowBalanceThreshold + Dollars(2));
+  transaction_processor_.ProcessTransaction(user, Transaction(Dollars(3)));
+  EXPECT_EQ(user.GetEmails().size(), 1);
+  EXPECT_STREQ(user.GetEmails().at(0).GetSubject(), "Your balance is low");
+}
+```
+{{% /notice %}}
+
+## What Makes a Good Test?
+
+Tests provide more than verification. They also serve as documentation.
+
+As a source of documentation, test should not be distracting or hide information.
+
+{{% notice warning %}}
+``` cpp
+TEST(CalculatorTest, ShouldPerformAddition) {
+  Calculator calculator(RoundingStrategy(),
+    "unused", kEnableCosinFeature, 0.01, kCalculusEngine, false);
+  int result = calculator.DoComputation(MakeTestComputation());
+  EXPECT_EQ(result, 5);
+}
+```
+{{% /notice %}}
+
+{{% notice tip %}}
+```cpp
+TEST_(CalculatorTest, ShouldPerformAddition) {
+  const int result = calculator_.DoComputation(MakeAdditionComputation(2, 3));
+  EXPECT_EQ(result, 5);
+}
+```
+{{% /notice %}}
+
+## Test Behavior, Not Implementation
+
+*August 5, 2013* - [original
+post](https://testing.googleblog.com/2013/08/testing-on-toilet-test-behavior-not.html)
+
+Except where explicitly intended, tests should work independent of the implementation details being
+tested.
+
+```cpp
+class Calculator {
+ public:
+  int Add(int a, int b)  {
+    return a + b;
+  }
+};
+
+class Calculator {
+ public:
+  int Add(int a, int b) {
+    Adder adder = adder_factory_.CreateAdder();
+    ReturnValue return_value = adder.Compute(Number(a), Number(b));
+    return return_value.ConvertToInteger();
+  }
+
+ private:
+  AdderFactory adder_factory_;
+};
+
+TEST_F(CalculatorTest, ShouldAddIntegers) {
+  EXPECT_EQ(3, calculator_.Add(2, 1));
+  EXPECT_EQ(2, calculator_.Add(2, 0));
+  EXPECT_EQ(1, calculator_.Add(2, -1));
+}
+```
+
+## Know Your Test Doubles
+
+*July 18, 2013* - [original
+post](https://testing.googleblog.com/2013/07/testing-on-toilet-know-your-test-doubles.html)
+
+A test double is an object that can stand in for a real object in test. The most common types of
+test doubles are:
+
+- **Stub** - Returns a specific values to promote a specific state.
+
+  ```cpp
+  AccessManager access_manager(kStubAuthentificationService);
+
+  ON_CALL(kStubAuthentificationService, IsAuthenticated(kUserId)).WillByDefault(Return(false));
+  EXPECT_FALSE(access_manager.UserHasAccess(kUserId));
+
+  ON_CALL(kStubAuthentificationService, IsAuthenticated(kUserId)).WillByDefault(Return(true));
+  EXPECT_TRUE(access_manager.UserHasAccess(kUserId));
+  ```
+
+- **Mock** - Sets expectations about how other objects should interact with it.
+
+  ```cpp
+  AccessManager access_manager(mockAuthentificationService);
+
+  EXPECT_CALL(mockAuthentificationService, IsAuthenticated(kUserId));
+  access_manager.UserHasAccess(kUserId);
+  ```
+
+- **Fake** - A lightweight implementation when the real implementation is unsuitable for test.
+
+  ```cpp
+  FakeAuthentificationService fake_authentification_service;
+  AccessManager access_manager(fake_authentification_service);
+
+  EXPECT_FALSE(access_manager.UserHasAccess(kUserId));
+
+  fake_authentification_service.AddAuthenticatedUser(kUser);
+  EXPECT_TRUE(access_manager.UserHasAccess(kUserId));
+  ```
+
+## Fake Your Way To Better Tests
+
+*June 28, 2013* - [original
+post](https://testing.googleblog.com/2013/06/testing-on-toilet-fake-your-way-to.html)
+
+Suppose you would like to test your blog platform API, but you don't want your tests talking to a
+remote server.
+
+``` cpp
+void DeletePostsWithTag(const Tag& tag) {
+  for (const Post post : blog_service_->GetAllPosts()) {
+    if (post.HasTag(tag)) {
+      blog_service_->DeletePost(post.GetId());
+    }
+  }
+}
+```
+
+A fake is a lightweight implementation of an API that behaves like the real implementation, but
+isn't suitable for production.
+
+```cpp
+class FakeBlogService : public BlogService {
+ public:
+  void AddPost(const Post& post) { posts.insert(post); }
+  void DeletePost(const int id) {
+    for (auto& post : posts) {
+      if (post.GetId() == id) { posts.erase(post); return; }
+    }
+  }
+  std::set<Post> GetAllPosts() const { return posts; }
+
+ private:
+  std::set<Post> posts;
+};
+```
+
+Fakes should be created and maintained by the person or team that owns the real implementation.
+
+Fakes should have their own tests to make sure they behave like the real implementation.
+
+## Don't Overuse Mocks
+
+*May 28, 2013* - [original
+post](https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html)
+
+Mocks are powerful, but easy to abuse.
+
+{{% notice warning %}}
+```cpp
+TEST_F(PaymentProcessorTest, ShouldChargeCreditCard) {
+  PaymentProcessor payment_processor(mock_credit_card_server_);
+
+  InSequence s;
+  EXPECT_CALL(mock_credit_card_server_, IsServerAvailable()).WillOnce(Return(true));
+  EXPECT_CALL(mock_credit_card_server_, BeginTransaction()).WillOnce(Return(mock_transaction_manager_));
+  EXPECT_CALL(mock_transaction_manager_, GetTransaction()).WillOnce(Return(transaction_));
+  EXPECT_CALL(mock_credit_card_server_, Pay(transaction_, credit_card_, 500)).WillOnce(Return(mock_payment_));
+  EXPECT_CALL(mock_payment_, IsOverMaxBalance()).WillOnce(Return(false));
+
+  payment_processor.ProcessPayment(credit_card_, Dollars(500));
+}
+```
+{{% /notice %}}
+
+Overusing mocks makes tests harder to understand, maintain, and provides less insurance that your
+code is working properly.
+
+If you don't need a mock, don't use one. Understanding when to use a mock comes from understanding
+what you want to test.
+
+{{% notice tip %}}
+```cpp
+TEST_F(PaymentProcessorTest, ShouldChargeCreditCard) {
+  PaymentProcessor payment_processor(credit_card_server_);
+  payment_processor.ProcessPayment(credit_card_, Dollars(500));
+  EXPECT_EQ(credit_card_server_.GetMostRecentCharge(credit_card_), 500);
+}
+```
+{{% /notice %}}
+
+## Testing State vs. Testing Interactions
+
+*March 22, 2013* - [original
+post](https://testing.googleblog.com/2013/03/testing-on-toilet-testing-state-vs.html)
+
+- **Testing State** - Verifying the code under test returns the correct results.
+
+  ```cpp
+  TEST(NumberSorterTest, ShouldSortIntegers) {
+    NumberSorter number_sorter({quicksort, bubblesort});
+    std::vector<int> numbers = {3, 1, 2};
+    EXPECT_EQ({1, 2, 3}, number_sorter.SortNumbers(numbers));
+  }
+  ```
+
+- **Testing Interaction** - Verifying the code under test calls methods correctly.
+
+  ```cpp
+  TEST(NumberSorterTest, ShouldUseQuicksort) {
+    NumberSorter number_sorter({mock_quicksort, mock_bubblesort});
+    std::vector<int> numbers = {3, 1, 2};
+    EXPECT_CALL(mock_quicksort, Sort(numbers);
+    number_sorter.SortNumbers(numbers);
+  }
+  ```
+
+Most of the time you want to test state. Occasionally interactions need to be tested when the number
+of calls or order of calls matter.
 
