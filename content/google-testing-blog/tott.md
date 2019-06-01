@@ -31,9 +31,10 @@ class Vector {
 ```
 {{% /notice %}}
 
-Caller needs to check `RemainingSlots` and if 0, `AddSlots` in order for `Insert` to work properly.
+In the code above, the caller needs to check `RemainingSlots`, and if `0`, `AddSlots` in order for 
+`Insert` to work properly.
 
-`Insert` could automatically manage slots.
+Instead, `Insert` could automatically manage slots.
 
 {{% notice tip %}}
 ```cpp
@@ -44,7 +45,7 @@ class Vector {
 ```
 {{% /notice %}}
 
-Other examples:
+Other signs an interface is hard to use:
 
 - `Initialize` / `Deitialize` functions.
 - Allowing partially created objects.
@@ -66,7 +67,7 @@ Tests become fragile when they expect exact values on irrelevant arguments.
 TEST_F(DisplayGreetingTest, ShowSpecialGreetingOnNewYearsDay) {
   fake_clock_.SetTime(kNewYearsDay);
   fake_user_.SetName("Fake User");
-  EXPECT_CALL(mock_user_Prompter_, UpdatePrompt("Hi Fake User! Happy New Year!",
+  EXPECT_CALL(mock_user_prompter_, UpdatePrompt("Hi Fake User! Happy New Year!",
                                                 TitleBar("2018-01-01"),
                                                 PromptStyle::kNormal));
   user_greeter_.DisplayGreeting();
@@ -74,8 +75,8 @@ TEST_F(DisplayGreetingTest, ShowSpecialGreetingOnNewYearsDay) {
 ```
 {{% /notice %}}
 
-Only verify one behavior per test. Only verify arguments that affect the correctness of the specific
-behavior being tested.
+- Only verify one behavior per test.
+- Only verify arguments that affect the correctness of the specific behavior being tested.
 
 {{% notice tip %}}
 ```cpp
@@ -138,7 +139,7 @@ TEST_F(BankAccountTest, CanOverdrawUpToOverdraftLimit) {
 ```
 {{% /notice %}}
 
-Notice how each test only asserts on the output of one call per test.
+Notice how each test only verifies the output of one call per test.
 
 ## Understanding Code in Review
 
@@ -247,11 +248,11 @@ TEST(UserAuthorizer, AddPermissionToDatabase) {
 ```
 {{% /notice %}}
 
-Instead of expecting non-state-changing methods to be called, use them to verify state.
+It is fine, however, to use non-state-changing methods for simulating test conditions.
 
-{{% notice warning %}}
+{{% notice tip %}}
 ```cpp
-EXPECT_FALSE(IsUserActive(kUser));
+ON_CALL(mock_user_service_, IsUserActive(kUser)).WillByDefault(Return(false));
 ```
 {{% /notice %}}
 
@@ -460,7 +461,7 @@ if (response.GetStatus() == Status::kOk) {
 ```
 {{% /notice %}}
 
-The code above could be refactored using a technique called guard clause.
+The code above could be refactored to use guard clauses.
 
 {{% notice tip %}}
 ```cpp
