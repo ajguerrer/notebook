@@ -945,3 +945,234 @@ post](https://testing.googleblog.com/2013/03/testing-on-toilet-testing-state-vs.
 Most of the time you want to test state. Occasionally interactions need to be tested when the number
 of calls or order of calls matter.
 
+## Data Driven Traps!
+
+*September 4, 2008* - 
+[original post](https://testing.googleblog.com/2008/09/tott-data-driven-traps.html)
+
+Data driven tests are efficient, but easy to abuse.
+
+{{% notice warning %}}
+```cpp
+struct TestData {
+  const std::string word;
+  const bool is_word;
+};
+
+const std::vector<TestData> test_data = {
+    {"milk", true},
+    {"centre", false},
+    {"jklm", false},
+};
+
+TEST(IsWordTest, TestEverything) {
+  for (const auto& entry : test_data) {
+    EXPECT_EQ(IsWord(entry.word), entry.is_word);
+  }
+}
+```
+{{% /notice %}}
+
+Data-driven tests make debugging and understanding failures, let alone false positives, more
+difficult. 
+
+As the code grows in complexity, data tends to grow even faster. It quicky becomes impossible to
+discern what behavior each piece of data is meant to test.
+
+{{% notice warning %}}
+```cpp
+const std::vector<Locale> locales = { Word::US, Word::UK, Word::France, ... };
+
+struct TestData {
+  const std::string word;
+  const bool[kNumLocales] is_word;
+};
+
+const std::vector<TestData> test_data = {
+    {"milk", {true, true, false, ...},
+    {"centre", {false, true, true, ...}},
+    {"jklm", {false, false, false, ...}},
+};
+
+TEST(IsWordTest, TestEverything) {
+  for (const auto& entry : test_data) {
+    for (const auto* locale: locales) {
+      EXPECT_EQ(IsWord(entry.word, locale), entry.is_word);
+    }
+  }
+}
+```
+{{% /notice %}}
+
+Instead, think critically about what behaviors are worth testing.
+
+{{% notice tip %}}
+```cpp
+TEST(IsWordTest, ShouldExistInMultipleLocales) {
+  EXPECT_TRUE(IsWord("milk", Word::US));
+  EXPECT_TRUE(IsWord("milk", Word::UK));
+  EXPECT_FALSE(IsWord("milk", Word::France));
+}
+
+TEST(IsWordTest, ShouldNotExist) {
+  // "jklm" test not repeated as it uses the same code path
+  EXPECT_FALSE(IsWord("jklm", Word::US));
+}
+```
+{{% /notice %}}
+
+## Sleeping != Synchronization
+
+*August 21, 2008* - 
+[orignial post](https://testing.googleblog.com/2008/08/tott-sleeping-synchronization.html)
+
+Any code that `sleep`s should be considered taboo. In test, `sleep` should be banned.
+
+{{% notice warning %}}
+```cpp
+class Employee {
+ public:
+  void DrinkCoffee() { caffeinated_ = true; }
+  bool IsCaffeinated() { return caffeinated_; }
+
+  void DemandCoffee(Intern& intern) {
+    std::thread t(&Intern::MakeCoffee, &intern,
+                  std::bind(&Employee::DrinkCoffee, this));
+    t.detach();
+  }
+ private:
+  bool caffeinated_ = false;
+};
+
+TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
+  Employee e;
+  Intern i;
+  e.DemandCoffee(i);
+  EXPECT_FALSE(e.IsCaffeinated());
+  std::this_thread::sleep_for(60s);
+  EXPECT_TRUE(e.IsCaffeinated());
+}
+```
+{{% /notice %}}
+
+Code that sleeps can be improved by waiting on a `std::future` or a `std::condition_variable`.
+If your waiting on a non-trivial operation, use a fake.
+
+{{% notice tip %}}
+```cpp
+class CoffeeMaker {
+ public:
+  virtual void MakeCoffee(const std::function<void()> callback) = 0;
+};
+
+class FakeIntern : public CoffeeMaker {
+ public:
+  void MakeCoffee(const std::function<void()> callback) { callback(); }
+};
+
+class Employee {
+ public:
+  void DrinkCoffee() { caffeinated_ = true; }
+  bool IsCaffeinated() { return caffeinated_; }
+
+  void DemandCoffee(CoffeeMaker& cm) {
+    std::future<void> f = std::async(&CoffeeMaker::MakeCoffee, &cm,
+                                     std::bind(&Employee::DrinkCoffee, this));
+    f.wait_for(60s);
+  }
+ private:
+  bool caffeinated_ = false;
+};
+
+TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
+  Employee e;
+  FakeIntern i;
+  EXPECT_FALSE(e.IsCaffeinated());
+  e.DemandCoffee(i);
+  EXPECT_TRUE(e.IsCaffeinated());
+}
+```
+{{% /notice %}}
+
+## Defeat "Static Cling"
+
+*June 26* - 
+[original post](https://testing.googleblog.com/2008/06/defeat-static-cling.html)
+
+Static functions, like this singleton `GetInstance` method, are a sign of tight coupling.
+
+```cpp
+class MyObject {
+ public:
+  int DoSomething(int id) { return TheirEntity::GetInstance().GetSomething(); }
+};
+```
+
+There is a way around this using the Repository Pattern.
+
+```cpp
+class TheirEntityStaticRepository : public TheirEntityRepository {
+ public:
+  TheirEntity& GetInstance() { return TheirEntity::GetInstance(); }
+};
+
+class MyObject {
+ public:
+  explicit MyObject(std::unique_ptr<TheirEntityRepository> repository)
+      : repository_(std::move(repository)) {}
+  int DoSomething(int id) { return repository_->GetInstance().GetSomething(); }
+
+ private:
+  std::unique_ptr<TheirEntityRepository> repository_;
+};
+```
+
+All thats left is to derive a `TheirEntityRepository` suitable for your testing needs.
+
+## Testable Contracts Make Exceptional Neighbors
+
+*May 28, 2008* -
+[original post](https://testing.googleblog.com/2008/05/tott-testable-contracts-make.html)
+
+Modify external visible state only after completing all operations which could possibly fail.
+
+{{% notice warning %}}
+```cpp
+bool SomeCollection::GetObjects(std::vector<Object>& objects) const {
+  objects.clear();
+  for (const auto& object : collection_) {
+    if (object.IsFubarred()) return false;
+    objects.push_back(object);
+  }
+  return true;
+}
+```
+{{% /notice %}}
+
+This can be done using the `swap` trick.
+
+{{% notice tip %}}
+```cpp
+bool SomeCollection::GetObjects(std::vector<Object>& objects) const {
+  std::vector<Object> known_good_objects;
+  for (const auto& object : collection_) {
+    if (object.IsFubarred()) return false;
+    known_good_objects.push_back(object);
+  }
+  objects.swap(known_good_objects);
+  return true;
+}
+```
+{{% /notice %}}
+
+Now, the caller has good objects on success, or unchanged objects on failure.
+
+## Understanding Your Coverage Data
+
+*March 6, 2008* -
+[original post](https://testing.googleblog.com/2008/03/tott-understanding-your-coverage-data.html)
+
+High test coverage is necessary but not sufficient.
+
+Use your test coverage results to look for unexpected coverage patterns, which usually indicate 
+bugs, and add test cases to address them.
