@@ -104,7 +104,7 @@ failure.
 
 {{% notice warning %}}
 ```cpp
-TEST_F(BankAcountTest, WidthdrawFromAccount) {
+TEST_F(BankAccountTest, WithdrawFromAccount) {
   Transaction transaction = account_.Deposit(Usd(5));
   clock_.AdvanceTime(kMinTimeToSettle);
   account_.Settle(transaction);
@@ -177,7 +177,7 @@ Clarifying code often results in noticing improvements.
 
 ## Cleanly Create Test Data
 
-*Febuary 20, 2018* - [original
+*February 20, 2018* - [original
 post](https://testing.googleblog.com/2018/02/testing-on-toilet-cleanly-create-test.html)
 
 Helper methods make it easier to create test data, but they don't age well.
@@ -805,33 +805,33 @@ test doubles are:
 - **Stub** - Returns a specific values to promote a specific state.
 
   ```cpp
-  AccessManager access_manager(kStubAuthentificationService);
+  AccessManager access_manager(kStubAuthenticationService);
 
-  ON_CALL(kStubAuthentificationService, IsAuthenticated(kUserId)).WillByDefault(Return(false));
+  ON_CALL(kStubAuthenticationService, IsAuthenticated(kUserId)).WillByDefault(Return(false));
   EXPECT_FALSE(access_manager.UserHasAccess(kUserId));
 
-  ON_CALL(kStubAuthentificationService, IsAuthenticated(kUserId)).WillByDefault(Return(true));
+  ON_CALL(kStubAuthenticationService, IsAuthenticated(kUserId)).WillByDefault(Return(true));
   EXPECT_TRUE(access_manager.UserHasAccess(kUserId));
   ```
 
 - **Mock** - Sets expectations about how other objects should interact with it.
 
   ```cpp
-  AccessManager access_manager(mockAuthentificationService);
+  AccessManager access_manager(mockAuthenticationService);
 
-  EXPECT_CALL(mockAuthentificationService, IsAuthenticated(kUserId));
+  EXPECT_CALL(mockAuthenticationService, IsAuthenticated(kUserId));
   access_manager.UserHasAccess(kUserId);
   ```
 
 - **Fake** - A lightweight implementation when the real implementation is unsuitable for test.
 
   ```cpp
-  FakeAuthentificationService fake_authentification_service;
-  AccessManager access_manager(fake_authentification_service);
+  FakeAuthenticationService fake_authentication_service;
+  AccessManager access_manager(fake_authentication_service);
 
   EXPECT_FALSE(access_manager.UserHasAccess(kUserId));
 
-  fake_authentification_service.AddAuthenticatedUser(kUser);
+  fake_authentication_service.AddAuthenticatedUser(kUser);
   EXPECT_TRUE(access_manager.UserHasAccess(kUserId));
   ```
 
@@ -976,7 +976,7 @@ TEST(IsWordTest, TestEverything) {
 Data-driven tests make debugging and understanding failures, let alone false positives, more
 difficult. 
 
-As the code grows in complexity, data tends to grow even faster. It quicky becomes impossible to
+As the code grows in complexity, data tends to grow even faster. It quickly becomes impossible to
 discern what behavior each piece of data is meant to test.
 
 {{% notice warning %}}
@@ -984,8 +984,8 @@ discern what behavior each piece of data is meant to test.
 const std::vector<Locale> locales = { Word::US, Word::UK, Word::France, ... };
 
 struct TestData {
-  const std::string word;
-  const bool[kNumLocales] is_word;
+  std::string word;
+  bool[kNumLocales] is_word;
 };
 
 const std::vector<TestData> test_data = {
@@ -1024,7 +1024,7 @@ TEST(IsWordTest, ShouldNotExist) {
 ## Sleeping != Synchronization
 
 *August 21, 2008* - 
-[orignial post](https://testing.googleblog.com/2008/08/tott-sleeping-synchronization.html)
+[original post](https://testing.googleblog.com/2008/08/tott-sleeping-synchronization.html)
 
 Any code that `sleep`s should be considered taboo. In test, `sleep` should be banned.
 
