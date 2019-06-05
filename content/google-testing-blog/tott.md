@@ -31,7 +31,7 @@ class Vector {
 ```
 {{% /notice %}}
 
-In the code above, the caller needs to check `RemainingSlots`, and if `0`, `AddSlots` in order for 
+In the code above, the caller needs to check `RemainingSlots`, and if `0`, `AddSlots` in order for
 `Insert` to work properly.
 
 Instead, `Insert` could automatically manage slots.
@@ -947,7 +947,7 @@ of calls or order of calls matter.
 
 ## Data Driven Traps!
 
-*September 4, 2008* - 
+*September 4, 2008* -
 [original post](https://testing.googleblog.com/2008/09/tott-data-driven-traps.html)
 
 Data driven tests are efficient, but easy to abuse.
@@ -974,7 +974,7 @@ TEST(IsWordTest, TestEverything) {
 {{% /notice %}}
 
 Data-driven tests make debugging and understanding failures, let alone false positives, more
-difficult. 
+difficult.
 
 As the code grows in complexity, data tends to grow even faster. It quickly becomes impossible to
 discern what behavior each piece of data is meant to test.
@@ -1023,23 +1023,38 @@ TEST(IsWordTest, ShouldNotExist) {
 
 ## Sleeping != Synchronization
 
-*August 21, 2008* - 
+*August 21, 2008* -
 [original post](https://testing.googleblog.com/2008/08/tott-sleeping-synchronization.html)
 
-Any code that `sleep`s should be considered taboo. In test, `sleep` should be banned.
+Any code that `sleep`s should be considered taboo. In test, calling any code that `sleep`s
+should be banned.
 
 {{% notice warning %}}
 ```cpp
+class CoffeeMaker {
+ public:
+  virtual void MakeCoffee(const std::function<void()> callback) = 0;
+};
+
+class Intern : public CoffeeMaker {
+ public:
+  void MakeCoffee(const std::function<void()> callback) {
+    // make coffee, hopefully within 60 seconds.
+    callback();
+  }
+};
+
 class Employee {
  public:
   void DrinkCoffee() { caffeinated_ = true; }
   bool IsCaffeinated() { return caffeinated_; }
 
-  void DemandCoffee(Intern& intern) {
-    std::thread t(&Intern::MakeCoffee, &intern,
+  void DemandCoffee(CoffeeMaker& cm) {
+    std::thread t(&CoffeeMaker::MakeCoffee, &cm,
                   std::bind(&Employee::DrinkCoffee, this));
     t.detach();
   }
+
  private:
   bool caffeinated_ = false;
 };
@@ -1056,39 +1071,44 @@ TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
 {{% /notice %}}
 
 Code that sleeps can be improved by waiting on a `std::future` or a `std::condition_variable`.
-If your waiting on a non-trivial operation, use a fake.
+As always, if your waiting on a non-trivial operation, like `Intern::MakeCoffee`, use a fake.
 
 {{% notice tip %}}
 ```cpp
-class CoffeeMaker {
- public:
-  virtual void MakeCoffee(const std::function<void()> callback) = 0;
-};
-
 class FakeIntern : public CoffeeMaker {
  public:
-  void MakeCoffee(const std::function<void()> callback) { callback(); }
-};
+  void MakeCoffee(const std::function<void()> callback) {
+    std::unique_lock<std::mutex> lock(mut_);
+    cv_.wait(lock, [this] { return ready_; });
 
-class Employee {
- public:
-  void DrinkCoffee() { caffeinated_ = true; }
-  bool IsCaffeinated() { return caffeinated_; }
+    callback();
+    done_ = true;
 
-  void DemandCoffee(CoffeeMaker& cm) {
-    std::future<void> f = std::async(&CoffeeMaker::MakeCoffee, &cm,
-                                     std::bind(&Employee::DrinkCoffee, this));
-    f.wait_for(60s);
+    lock.unlock();
+    cv_.notify_one();
   }
+
+  void SignalAndWait() {
+    std::unique_lock<std::mutex> lock(mut_);
+    ready_ = true;
+    cv_.notify_one();
+
+    cv_.wait(lock, [this] { return done_; });
+  }
+
  private:
-  bool caffeinated_ = false;
+  bool ready_ = false;
+  bool done_ = false;
+  std::condition_variable cv_;
+  std::mutex mut_;
 };
 
 TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
   Employee e;
   FakeIntern i;
-  EXPECT_FALSE(e.IsCaffeinated());
   e.DemandCoffee(i);
+  EXPECT_FALSE(e.IsCaffeinated());
+  i.SignalAndWait();
   EXPECT_TRUE(e.IsCaffeinated());
 }
 ```
@@ -1096,7 +1116,7 @@ TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
 
 ## Defeat "Static Cling"
 
-*June 26* - 
+*June 26* -
 [original post](https://testing.googleblog.com/2008/06/defeat-static-cling.html)
 
 Static functions, like this singleton `GetInstance` method, are a sign of tight coupling.
@@ -1127,7 +1147,7 @@ class MyObject {
 };
 ```
 
-All thats left is to derive a `TheirEntityRepository` suitable for your testing needs.
+All thats left is to derive a `MockTheirEntityRepository` suitable for your testing needs.
 
 ## Testable Contracts Make Exceptional Neighbors
 
@@ -1149,7 +1169,7 @@ bool SomeCollection::GetObjects(std::vector<Object>& objects) const {
 ```
 {{% /notice %}}
 
-This can be done using the `swap` trick.
+In these situations, the `swap` trick comes in handy.
 
 {{% notice tip %}}
 ```cpp
@@ -1174,5 +1194,126 @@ Now, the caller has good objects on success, or unchanged objects on failure.
 
 High test coverage is necessary but not sufficient.
 
-Use your test coverage results to look for unexpected coverage patterns, which usually indicate 
+Use your test coverage results to look for unexpected coverage patterns, which usually indicate
 bugs, and add test cases to address them.
+
+## Too Many Tests
+
+*February 21, 2008* -
+[original post](https://testing.googleblog.com/2008/02/in-movie-amadeus-austrian-emperor.html)
+
+How many tests? Answering this question requires a good grasp of the context.
+
+```cpp
+void Decide(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t d) {
+  if (a > b || c > d || e > f) {
+    DoOneThing();
+  } else {
+    DoAnother();
+  }
+}
+```
+
+- Testing every possible input would require 2<sup>192</sup> tests. Thats too many.
+- Testing enough to get full line coverage would require 2 tests. Thats too few.
+- Testing each logical expression (e.g `a > b`, `a == b`, `a < b`) independently is 27 tests. Still
+  probably too many.
+
+More context can focus the decision.
+
+```cpp
+void Decide(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32_t d) {
+  if (TallerThan(a, b) || HarderThan(c, d) || HeavierThan(e, f)) {
+    DoOneThing();
+  } else {
+    DoAnother();
+  }
+}
+
+bool TallerThan(int32_t a, int32_t b) { return a > b; }
+bool HarderThan(int32_t c, int32_t d) { return d > d; }
+bool HeavierThan(int32_t e, int32_t f) { return e > f; }
+```
+
+Testing the cases where each extracted function is true, they all are false, and writing 2 tests for
+each of the extracted functions would require 4 + 3*2 = 10 tests. Considering the number of inputs,
+thats just enough tests.
+
+## Avoiding Friend Twister in C++
+
+*October 30, 2007* -
+[original post](https://testing.googleblog.com/2007/10/tott-avoiding-friend-twister-in-c.html)
+
+"Testing private members requires more `friend` contortions than a game of Twister®."
+
+If you find yourself saying that, theres a better way.
+
+{{% notice warning %}}
+```cpp
+// include/my_project/dashboard.h
+
+class Dashboard {
+ private:
+  // Declaration of functions getResults(), GetResultsFromCache(),
+  // GetResultsFromDatabase(), and CountPassFail()
+
+  std::unique_ptr<Database> database_; // instantiated in constructor
+
+  friend class DashboardTest; // one friend declaration per test fixture
+};
+```
+{{% /notice %}}
+
+Instead, make a helper class by extracting a helper class (a variant of the Pimple idiom).
+
+To preserve privacy, the helper class is tucked away in a private implementation directory separate
+from the public API.
+
+{{% notice tip %}}
+```cpp
+// include/my_project/dashboard.h
+
+class ResultsLog; // Foreword declare extracted helper interface
+
+class Dashboard {
+ public:
+  explicit Dashboard(std::unique_ptr<ResultsLog> results)
+      : results_(std::move(results)) {}
+
+ private:
+   std::unique_ptr<ResultsLog> results_;
+};
+
+// src/results_log.h
+
+class ResultsLog {
+ public:
+  // Declaration of functions getResults(), GetResultsFromCache(),
+  // GetResultsFromDatabase(), and CountPassFail()
+};
+
+// src/live_results_log.h
+
+class LiveResultsLog : public ResultsLog {
+ public:
+  explicit LiveResultsLog(std::shared_ptr<Database> database)
+      : database_(std::move(database)) {}
+};
+```
+{{% /notice %}}
+
+As an added bonus, now you can inject a `MockResultsLog` or a `FakeDatabase` for testing the
+`Dashboard` class.
+
+## Refactoring Tests in the Red
+
+*April 26, 2007* -
+[original post](https://testing.googleblog.com/2007/04/tott-refactoring-tests-in-red.html)
+
+As your test suite grows, you will find yourself needing to refactor your tests. However,
+your tests don't have tests!
+
+One thing you can do is intentionally break the test, refactor the test, and make sure the test
+still fails as expected.
+
+Just remember to revert your code under test!
