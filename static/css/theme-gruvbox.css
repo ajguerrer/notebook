@@ -1,5 +1,5 @@
 :root {
-  --MAIN-BG-color: #262626;
+  --MAIN-BG-color: #282828;
   --MAIN-TEXT-color:#dab997; /* Color of text by default */
   --MAIN-TITLES-TEXT-color: #8a8a8a; /* Color of titles h2-h3-h4-h5 */
   --MAIN-LINK-color:#85ad85; /* Color of links */
@@ -10,7 +10,7 @@
   --MENU-HEADER-BORDER-color:#6a8a6a; /*Color of menu header border */
 
   --MENU-SEARCH-BG-color:#3a3a3a; /* Search field background color (by default borders + icons) */
-  --MENU-SEARCH-BOX-color: #262626; /* Override search field border color */
+  --MENU-SEARCH-BOX-color: #282828; /* Override search field border color */
   --MENU-SEARCH-BOX-ICONS-color: #dab997; /* Override search field icons color */
 
   --MENU-SECTIONS-ACTIVE-BG-color:#3a3a3a; /* Background color of the active section and its childs */
