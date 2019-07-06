@@ -1,7 +1,7 @@
-+++
-title = "Notebook"
-chapter = true
-+++
+---
+title: "Notebook"
+chapter: true
+---
 
 ### Andrew Guerrero
 # Notebook

@@ -1,8 +1,8 @@
-+++
-title = "Google Testing Blog"
-weight = 5
-chapter = true
-+++
+---
+title: "Google Testing Blog"
+weight: 5
+chapter: true
+---
 
 ### Google
 
