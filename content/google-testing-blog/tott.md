@@ -1026,8 +1026,7 @@ TEST(IsWordTest, ShouldNotExist) {
 *August 21, 2008* -
 [original post](https://testing.googleblog.com/2008/08/tott-sleeping-synchronization.html)
 
-Any code that `sleep`s should be considered taboo. In test, calling any code that `sleep`s
-should be banned.
+Beware of `sleep`. `sleep` should never be used for synchronization, or in test.
 
 {{% notice warning %}}
 ```cpp
@@ -1059,7 +1058,7 @@ class Employee {
   bool caffeinated_ = false;
 };
 
-TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
+TEST(EmployeeTest, ShouldBeCaffeinatedOnlyAfterDrinkingCoffee) {
   Employee e;
   Intern i;
   e.DemandCoffee(i);
@@ -1103,7 +1102,7 @@ class FakeIntern : public CoffeeMaker {
   std::mutex mut_;
 };
 
-TEST(EmployeeTest, ShouldBeCaffeinatedWithinAMinute) {
+TEST(EmployeeTest, ShouldBeCaffeinatedOnlyAfterDrinkingCoffee) {
   Employee e;
   FakeIntern i;
   e.DemandCoffee(i);
@@ -1124,13 +1123,21 @@ Static functions, like this singleton `GetInstance` method, are a sign of tight 
 ```cpp
 class MyObject {
  public:
-  int DoSomething(int id) { return TheirEntity::GetInstance().GetSomething(); }
+  int DoSomething(int id) {
+    return TheirEntity::GetInstance().GetSomething(id);
+  }
 };
 ```
 
 There is a way around this using the Repository Pattern.
 
 ```cpp
+class TheirEntityRepository {
+ public:
+  virtual TheirEntity& GetInstance() = 0;
+  // Other static methods here
+};
+
 class TheirEntityStaticRepository : public TheirEntityRepository {
  public:
   TheirEntity& GetInstance() { return TheirEntity::GetInstance(); }
