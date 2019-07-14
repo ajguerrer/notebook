@@ -1032,6 +1032,7 @@ Beware of `sleep`. `sleep` should never be used for synchronization, or in test.
 ```cpp
 class CoffeeMaker {
  public:
+  virtual ~CoffeeMaker() = default;
   virtual void MakeCoffee(const std::function<void()> callback) = 0;
 };
 
@@ -1134,6 +1135,7 @@ There is a way around this using the Repository Pattern.
 ```cpp
 class TheirEntityRepository {
  public:
+  virtual ~TheirEntityRepository() = default;
   virtual TheirEntity& GetInstance() = 0;
   // Other static methods here
 };
