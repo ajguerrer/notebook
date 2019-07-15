@@ -36,6 +36,27 @@ title: "Blog Notes"
 - Premature performance optimization makes bad code. Develop in a clean, maintainable and
   extensible manner *first*, and then let benchmarks drive performance optimizations.[^4]
 
+## The Seven Plagues of Software Testing
+
+- **Aimlessness** - Do not test for the sake of testing. Every test should have a goal. Document
+  what works and analyze what doesn't. Then, share with your colleagues.[^9]
+- **Repetitiveness** - Running the same test suite over again without finding new bugs does not
+  mean that there are no bugs. Variation is healthy.[^10]
+- **Amnesia** - Chances are the problem your are trying to solve has been solved before. If the same
+  issue keeps stinging you, or you had to answer a question the hard way, document it and put it in
+  a place others will find it.[^11]
+- **Boredom** - A bored tester rushes through the tactical aspects of testing without considering
+  the interesting strategic aspects. The day testing gets "figured out" is the day it gets
+  completely automated away.[^12]
+- **Homelessness** - Testers are homeless. They don't actually live in the software like users do.
+  Some bugs are only found with the hands of users doing their work in their environment.[^13]
+- **Blindness** - Software is a series of electromagnetic fluctuations on a storage media. Thats
+  hardly a helpful visual for a software tester. So, we rely on auxiliary tools to provide useful
+  feedback, but what other useful information are we blind to?[^14]
+- **Entropy** - Testers introduce entropy by increasing the amount of things developers need to do.
+  This is unavoidable, but preventative. As developers do more *during* development, entropy tends
+  towards its minimum.[^15]
+
 [^1]: https://testing.googleblog.com/2017/04/where-do-our-flaky-tests-come-from.html
 [^2]: https://testing.googleblog.com/2017/02/discomfort-as-tool-for-change.html
 [^3]: https://testing.googleblog.com/2007/10/post-release-closing-loop_02.html
@@ -44,3 +65,10 @@ title: "Blog Notes"
 [^6]: https://testing.googleblog.com/2008/06/taming-beast-aka-how-to-test-ajax.html
 [^7]: https://testing.googleblog.com/2008/09/presubmit-and-performance.html
 [^8]: https://testing.googleblog.com/2009/06/burning-test-questions-at-google.html
+[^9]: https://testing.googleblog.com/2009/06/7-plagues-of-software-testing.html
+[^10]: https://testing.googleblog.com/2009/06/by-james.html
+[^11]: https://testing.googleblog.com/2009/07/plague-of-amnesia.html
+[^12]: https://testing.googleblog.com/2009/07/plague-of-boredom.html
+[^13]: https://testing.googleblog.com/2009/07/plague-of-homelessness.html
+[^14]: https://testing.googleblog.com/2009/07/plague-of-blindness.html
+[^15]: https://testing.googleblog.com/2009/09/plague-of-entropy.html
