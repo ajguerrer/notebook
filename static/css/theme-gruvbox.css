@@ -1,6 +1,6 @@
 :root {
   --MAIN-BG-color: #282828;
-  --MAIN-TEXT-color:#dab997; /* Color of text by default */
+  --MAIN-TEXT-color:#ebdbb2; /* Color of text by default */
   --MAIN-TITLES-TEXT-color: #8a8a8a; /* Color of titles h2-h3-h4-h5 */
   --MAIN-LINK-color:#85ad85; /* Color of links */
   --MAIN-LINK-HOVER-color:#9dbd9d; /* Color of hovered links */
@@ -11,11 +11,11 @@
 
   --MENU-SEARCH-BG-color:#3a3a3a; /* Search field background color (by default borders + icons) */
   --MENU-SEARCH-BOX-color: #282828; /* Override search field border color */
-  --MENU-SEARCH-BOX-ICONS-color: #dab997; /* Override search field icons color */
+  --MENU-SEARCH-BOX-ICONS-color: #ebdbb2; /* Override search field icons color */
 
   --MENU-SECTIONS-ACTIVE-BG-color:#3a3a3a; /* Background color of the active section and its childs */
   --MENU-SECTIONS-BG-color:#3a3a3a; /* Background color of other sections */
-  --MENU-SECTIONS-LINK-color: #dab997; /* Color of links in menu */
+  --MENU-SECTIONS-LINK-color: #ebdbb2; /* Color of links in menu */
   --MENU-SECTIONS-LINK-HOVER-color: #85ad85;  /* Color of links in menu, when hovered */
   --MENU-SECTION-ACTIVE-CATEGORY-color: #9dbd9d; /* Color of active category text */
   --MENU-SECTION-ACTIVE-CATEGORY-BG-color: #4e4e4e; /* Color of background for the active category (only) */
