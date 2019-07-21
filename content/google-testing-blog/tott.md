@@ -1116,7 +1116,7 @@ TEST(EmployeeTest, ShouldBeCaffeinatedOnlyAfterDrinkingCoffee) {
 
 ## Defeat "Static Cling"
 
-*June 26* -
+*June 26, 2008* -
 [original post](https://testing.googleblog.com/2008/06/defeat-static-cling.html)
 
 Static functions, like this singleton `GetInstance` method, are a sign of tight coupling.
