@@ -53,21 +53,35 @@ Development and test are not treated as separate disciplines. Developers test an
 Instead, each of the three roles look at the product from different angles:
 
 - *SWE (Software Engineer)* - Feature creators responsible for their work. SWEs design and write
-  features, and prove they work by writing and running tests.
-- *SET (Software Engineer in Test)* - Codebase caretakers who enable SWEs to enforce quality. SETs
-  refactor code for testability, and write test doubles and framework.
+  features, and then prove they work by writing and running tests.
+- *SET (Software Engineer in Test)* - Codebase caretakers who enable SWEs to write tests. SETs
+  refactor code for testability, and write test features including test doubles and test framework.
 - *TE (Test Engineer)* - Product experts who analyze quality and risk from the perspective of the
-  user. TEs write automation scripts, drive test execution and interpret test results.[^15]
+  user. TEs write large tests and automation scrips as well as drive test execution and interpret
+  their results.[^15]
 
+SETs and TEs' are usually not involved early in the design phase of a product. Only when the product
+gains traction do they begin to exert their influence.[^19] [^21]
+
+SETs and SWEs have similar skill sets. Conversions from one role to another are common.[^20]
 
 Quality is a work in progress that relies on getting product out to users and receiving feedback as
 quickly as possible. As its being developed, a release is pushed through several channels in order
-of increasing confidence in product quality:
+of increasing confidence in quality:
 
 - *Canary* - Only fit for ultra tolerant users running experiments.
-- *Dev* - What developers use on their day-to-day work.
+- *Dev* - Used by developers for day-to-day work.
 - *Test* - Used internally for day-to-day work.
 - *Beta/Release* - Fit for external exposure.[^17]
+
+Tests are classified by scope, falling under three categories:
+
+- *Small* - Covers a single function, focusing on logic.
+- *Medium* - Covers a function and its nearest neighbors, focusing on interoperability.
+- *Large* -  Covers an entire user scenario, focusing on business requirements.[^18]
+
+If a test doesn't require human cleverness or intuition, it is automated. Bug reporting is automated
+too.[^18]
 
 [^1]: https://testing.googleblog.com/2009/06/7-plagues-of-software-testing.html
 [^2]: https://testing.googleblog.com/2009/06/by-james.html
@@ -87,3 +101,7 @@ of increasing confidence in product quality:
 [^15]: https://testing.googleblog.com/2011/02/how-google-tests-software-part-two.html
 [^16]: https://testing.googleblog.com/2011/02/how-google-tests-software-part-three.html
 [^17]: https://testing.googleblog.com/2011/03/how-google-tests-software-part-four.html
+[^18]: https://testing.googleblog.com/2011/03/how-google-tests-software-part-five.html
+[^19]: https://testing.googleblog.com/2011/05/how-google-tests-software-part-six.html
+[^20]: https://testing.googleblog.com/2011/05/how-google-tests-software-break-for-q.html
+[^21]: https://testing.googleblog.com/2011/05/how-google-tests-software-part-seven.html
