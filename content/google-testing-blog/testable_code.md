@@ -2,9 +2,7 @@
 title: "Guide to Writing Testable Code"
 ---
 
-<div style="text-align:center">
-  <h3>Miško Hevery</h3>
-</div>
+{{< author "Miško Hevery">}}
 
 You may find Miško's original guide [here](http://misko.hevery.com/code-reviewers-guide/).
 
