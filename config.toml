@@ -2,6 +2,8 @@ baseURL = "https://ajguerrer.github.io/"
 languageCode = "en-us"
 title = "Notebook"
 theme = "hugo-theme-learn"
+# Hack to prevent Hugo's Chroma highlighter from interfering with highlight.js
+pygmentsUseClasses = true
 
 # For search functionality
 [outputs]
