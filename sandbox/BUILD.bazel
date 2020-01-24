@@ -1,0 +1,19 @@
+cc_library(
+    name = "sandbox",
+    srcs = ["sand.cc"],
+    hdrs = ["sand.h"],
+)
+
+cc_test(
+    name = "sandbox_test",
+    srcs = ["sand_test.cc"],
+    deps = [
+        ":sandbox",
+        "@com_google_googletest//:gtest_main",
+    ]
+)
+
+# cc_image(
+#     name = "sandbox_image",
+#     binary = ":sandbox_test",
+# )
