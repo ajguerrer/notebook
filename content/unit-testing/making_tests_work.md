@@ -33,13 +33,19 @@ $$Test\ accuracy = {Signal\ (True\ positives) \over Noise\ (False\ positives)}$$
 
 ## The Ideal Test
 
+{*Protection against regressions*, *Resistance to refactoring*, *Fast feedback*} - Choose two. 
+
 ![Ideal test](/images/ideal_test.png)
 
-{Protection against regressions, Resistance to refactoring, Fast feedback} - Choose two. Always 
-maximize resistance to refactoring. Once resistance against refactoring is maximized, test size 
-becomes a slider between protection against regressions and fast feedback.
+Always maximize *resistance to refactoring*. Once resistance against refactoring is maximized, test 
+size becomes a slider between *protection against regressions* and *fast feedback*.
 
 ![Test triangle](/images/test_triangle.png)
+
+A good amount of *protection against regressions* and *fast feedback* requires a diverse ratio of 
+test sizes. As a general rule of thumb, prefer a 7:2:1 ratio of small, medium, and large tests.
+
+![Test pyramid](/images/test_pyramid.png)
 
 ## Preventing False Positives
 
