@@ -12,3 +12,8 @@ pygmentsUseClasses = true
 # Apply custom gruvbox css to theme
 [params]
 	themeVariant = "gruvbox"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
