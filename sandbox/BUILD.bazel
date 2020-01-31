@@ -2,6 +2,7 @@ cc_library(
     name = "sandbox",
     srcs = ["sand.cc"],
     hdrs = ["sand.h"],
+    copts = ["-std=c++17"],
 )
 
 cc_test(
@@ -10,7 +11,8 @@ cc_test(
     deps = [
         ":sandbox",
         "@com_google_googletest//:gtest_main",
-    ]
+    ],
+    data = ["sand.cc"],
 )
 
 # cc_image(
