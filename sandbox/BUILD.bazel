@@ -3,6 +3,9 @@ cc_library(
     srcs = ["sand.cc"],
     hdrs = ["sand.h"],
     copts = ["-std=c++17"],
+    deps = [
+        "@com_google_absl//absl/strings",
+    ],
 )
 
 cc_test(
@@ -15,7 +18,21 @@ cc_test(
     data = ["sand.cc"],
 )
 
-# cc_image(
-#     name = "sandbox_image",
-#     binary = ":sandbox_test",
-# )
+cc_library(
+    name = "user",
+    srcs = [
+        "user.cc",
+        "user_controller.cc",
+        ],
+    hdrs = [
+        "user.h",
+        "user_controller.h",
+        "user_type.h",
+        "database.h",
+        "message_bus.h",
+    ],
+    copts = ["-std=c++17"],
+    deps = [
+        "@com_google_absl//absl/strings",
+    ],
+)
