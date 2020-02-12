@@ -172,6 +172,11 @@ blockquote p {
   color: var(--BLOCKQUOTE-color);
 }
 
+pre {
+  margin: 1rem 0;
+  padding-left: 0px;
+}
+
 code {
   color: var(--MAIN-TEXT-color);
   background: var(--MAIN-BG-color);
@@ -238,6 +243,7 @@ div.notices p {
 }
 
 div.notices pre {
+  padding-left: 1rem;
   padding-top: 0px;
   padding-bottom: 0px;
 }
