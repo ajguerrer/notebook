@@ -43,7 +43,8 @@ Always chose to maximize *resistance to refactoring*. Then, test size becomes a 
 ![Test triangle](/images/test_triangle.png)
 
 A diverse ratio of test sizes provides an ideal amount of both *protection against regressions* and 
-*fast feedback*. As a general rule of thumb, prefer a 7:2:1 ratio of small, medium, and large tests.
+*fast feedback*. For any non-trivial production system, test counts should form a pyramid where the
+test count shrinks as test size grows. 
 
 ![Test pyramid](/images/test_pyramid.png)
 
@@ -215,23 +216,25 @@ class MessageRenderer : public Renderer {
 
 ## Hexagonal Architecture
 
-Hexagonal Architecture, proposed by Alistair Cockburn, breaks applications into two parts:
+Hexagonal Architecture, proposed by Alistair Cockburn, breaks applications into two layers:
 
-- **Business logic** - Algorithms and domain models essential to the business.
-- **Controllers** - All other responsibilities of the application.
+- **Domain layer** - Algorithms and domain models essential to the business.
+- **Controller layer** - All other responsibilities of the application.
 
-Interaction between *business logic* and *controllers* follow three guidelines: 
+Interaction between the Domain layer and the Controller layer follow three guidelines: 
 
-1. Business logic is isolated from controllers.
-1. Business logic may not depend on controllers, but controllers may depend on business logic.
-1. Communication with external applications is handled by controllers, not business logic.
+1. The Domain layer is isolated from the Controller layer.
+1. The Domain layer may not depend on the Controller layer, but the Controller layer may 
+   depend on the Domain layer.
+1. Communication with external applications is handled by the Controller layer, not the 
+   Domain layer.
 
-![hexagonal architecture](/images/hexagonal_architecture.png)
+![Hexagonal Architecture](/images/hexagonal_architecture.png)
 
 {{% notice tip %}}
-Business logic has high cyclomatic complexity and domain significance; controllers have a large 
-number of collaborators. Code that is both complex and involves many collaborators is 
-overcomplicated and what hexagonal architecture aims to dissolve. 
+The Domain layer has high cyclomatic complexity and domain significance, while the Controller layer 
+has a large number of collaborators. Code that is both complex and involves many collaborators is 
+overcomplicated and what Hexagonal Architecture aims to dissolve. 
 {{% /notice %}}
 
 
@@ -248,14 +251,14 @@ details too, and should not be mocked either.
 
 ## Functional Architecture
 
-Functional architecture builds off of hexagonal architecture with an added guideline that business 
+Functional architecture builds off of Hexagonal Architecture with an added guideline that business 
 logic is written in a functional paradigm. The architecture generally flows in a three step process:
 
-1. Application services gather and prepare input.
-1. Business logic makes decisions based on prepared input.
-1. Application services converts decisions into side effects.
+1. The Controller layer gathers and prepare input.
+1. The Domain layer makes decisions based on prepared input.
+1. The Controller layer converts decisions into side effects.
 
-![functional architecture](/images/functional_architecture.png)
+![Functional Architecture](/images/functional_architecture.png)
 
 > Object-oriented programming makes code understandable by encapsulating moving parts. Functional
 > programming makes code understandable by minimizing moving parts. *--Michael Feathers*
@@ -269,17 +272,17 @@ Functional architecture assumes a clearcut pipeline of inputs, decisions, and si
 production applications are rarely that simple. What if those decisions lead to gathering more input 
 and making more decisions? There are three strategies to consider:
 
-1. *Eagerly gather all the input* - Preserve controller simplicity and isolated business logic, 
+1. *Eagerly gather all the input* - Preserve controller simplicity and isolated domain logic, 
    but concede performance.
-1. *Inject dependencies into business logic* - Preserve controller simplicity and performance, but
-   concede isolated business logic.
-1. *Allow controller orchestration* - Preserve isolated business logic and performance, but concede 
+1. *Inject dependencies into the Domain layer* - Preserve controller simplicity and performance, but
+   concede isolated domain logic.
+1. *Allow controller orchestration* - Preserve isolated domain logic and performance, but concede 
    controller simplicity.
 
-Isolated business logic is an attribute that should always be maximized because it has a huge impact 
+Isolated domain logic is an attribute that should always be maximized because it has a huge impact 
 on *maintainability* and *resistance to refactoring*. In cases where performance is not critical, 
-feel free to stick to a functional architecture. Otherwise, controllers will need to orchestrate 
-gathering input as a side effect of business logic decisions.
+feel free to stick to a Functional Architecture. Otherwise, controllers will need to orchestrate 
+gathering input as a side effect of decisions from the Domain layer.
 
 {{% notice tip %}}
 Controller orchestration will make controllers more complex, but complexity can be mitigated with 

@@ -91,7 +91,7 @@ a patients temperature while focusing on the root cause of the illness.
 A successful test suite has the following properties:
 
 1. Integrated into the development cycle.
-1. Targets only the most important parts of the code base: the business logic.
+1. Targets only the most important parts of the code base: the domain logic.
 1. Provides maximum value with minimum maintenance costs.
 
 Enforcing test quality is a tough problem; one that requires personal judgement.
