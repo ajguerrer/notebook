@@ -3,7 +3,7 @@ title: "Making your Tests Work for You"
 weight: 2
 ---
 
-## Four Pillars of a Good Unit Test
+## Four Pillars of a Good Test
 
 1. **Protection against regressions** - Ability to indicate the presence of regressions.
 1. **Resistance to refactoring** - Degree to which a test can sustain refactoring without producing
@@ -121,7 +121,7 @@ called *over-specification*.
 A well-designed API hides all implementation details behind a private API, leaving only the 
 observable behavior in the public API. Implementation details should not *leak* into the public API.
 
-### Invariant violation
+#### Invariant violation
 
 {{% notice warning %}}
 ```cpp
@@ -170,7 +170,7 @@ user.SetName(new_name);
 ```
 {{% /notice %}}
 
-### Leaking state
+#### Leaking state
 
 {{% notice warning %}}
 ```cpp
@@ -272,11 +272,11 @@ Functional architecture assumes a clearcut pipeline of inputs, decisions, and si
 production applications are rarely that simple. What if those decisions lead to gathering more input 
 and making more decisions? There are three strategies to consider:
 
-1. *Eagerly gather all the input* - Preserve controller simplicity and isolated domain logic, 
+1. **Eagerly gather all the input** - Preserve controller simplicity and isolated domain logic, 
    but concede performance.
-1. *Inject dependencies into the Domain layer* - Preserve controller simplicity and performance, but
+1. **Inject dependencies into the Domain layer** - Preserve controller simplicity and performance, but
    concede isolated domain logic.
-1. *Allow controller orchestration* - Preserve isolated domain logic and performance, but concede 
+1. **Allow controller orchestration** - Preserve isolated domain logic and performance, but concede 
    controller simplicity.
 
 Isolated domain logic is an attribute that should always be maximized because it has a huge impact 
