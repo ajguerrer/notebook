@@ -27,7 +27,7 @@ title: "James Whittaker"
 
 - *Product expertise* - A good developer knows how the product works; a good tester knows how to use
   it.[^8]
-- *Bill of materials* - Testers should bea able to reference a complete list of features that can be
+- *Bill of materials* - Testers should be able to reference a complete list of features that can be
   tested.[^9]
 - *Risk analysis* - Features are not equally important, or equally time consuming to test. Have a
   model to quantitatively analyze the risk of each feature.[^17]

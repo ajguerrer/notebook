@@ -298,7 +298,7 @@ TEST(CustomerController, CustomerWithNoDeliveries) {
 ```
 {{% /notice %}}
 
-## Don't use time as an ambient context
+### Don't use time as an ambient context
 
 Using time as an ambient context adds unnecessary shared dependencies, making testing difficult.
 
