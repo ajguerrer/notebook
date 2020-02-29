@@ -1409,7 +1409,7 @@ class ResultsLog {
 
 class LiveResultsLog : public ResultsLog {
  public:
-  explicit LiveResultsLog(std::shared_ptr<Database> database)
+  explicit LiveResultsLog(std::unique<Database> database)
       : database_(std::move(database)) {}
 };
 ```
