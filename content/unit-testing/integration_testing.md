@@ -104,7 +104,7 @@ run the database in production.
 by the application.
 {{% /notice %}}
 
-migration scripts are used in testing and production. Once committed to source control,
+Migration scripts should be used in both testing and production. Once committed to source control,
 don't modify them. Make a new migration script instead of fixing the old one, unless fixing the old
 one prevents data loss.
 
@@ -113,8 +113,8 @@ one prevents data loss.
 Transactions are capable of updating sets of data within the same business operation atomically. 
 When transactions are involved, applications make two separate types of decisions:
 
-1. What data gets updated
-2. Should a set of updates be kept or rolled back
+1. Which data gets updated to what?
+2. Should a set of updates be kept or rolled back?
 
 These decisions should be separated into two different responsibilities:
 
@@ -135,21 +135,18 @@ To replicate the production environment as closely as possible, integration test
 
 There are many ways to cleanup a database between tests:
 
-- **Restore a backup database before each test** - Works but is slow.
+- **Restore a backup database before each test** - Works, but slow.
 - **Cleanup data at the end of the test** - Might be skipped when test fails.
-- **Wrap each test in a transaction and then don't commit it** - Makes behavior between 
-  production and testing inconsistent.
-- **Cleanup data at the beginning of the test** - Is fast, consistent, and won't get skipped.
+- **Wrap each test in a transaction and then don't commit** - Makes behavior between production and 
+  testing inconsistent.
+- **Cleanup data at the beginning of the test** - Fast, consistent, and won't get skipped.
  
 #### Best Practices
 
-- **Avoid in-memory databases** - Changing the database introduces behavioral inconsistencies 
-  between production and testing.
+- **Avoid in-memory databases** - Makes behavior between production and testing inconsistent.
 - **Reuse code in test sections** - *Arrange* with factory or builder pattern, *act* with decorator
   pattern, and *assert* with handmade mocks (a.k.a. Spys).
-- **Skip trivial database read tests** - Write operations are always important because they can lead
-  to data corruption, but reads won't corrupt the database. Only test reads that are important or 
-  complex; disregard the rest.
-- **Don't test repositories directly** - Repositories belong in the Controller layer, and if 
-  properly designed, shouldn't be complex. Like any controller, they should be included in the 
-  overarching integration test. 
+- **Skip trivial database read tests** - Writes are always important because the alter the state of
+  the database. Test reads that are important or complex; disregard the rest.
+- **Don't test repositories directly** - Repositories are a controller, so they shouldn't be 
+  complex. They should be tested in an integration test like any other controller. 
