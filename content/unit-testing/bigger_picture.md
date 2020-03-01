@@ -6,18 +6,18 @@ weight: 1
 ## What Makes a Good or Bad Test?
 
 - Unit testing enables *sustainable* growth in software projects by acting as a form of insurance 
-  against regressions. Good tests outweigh their maintenance cost with the cost of the bugs they 
-  prevent.
+  against regressions. A good test has a lower maintenance cost than the cost of fixing the bugs it 
+  prevents.
 - Code is a liability, not an asset, and tests are code too. Tests that don't verify business value, 
   raise false alarms, run slow, and are difficult to maintain, do more harm than good.
 
 ## Code Coverage Metrics
 
-Coverage metrics work well as a negative indicator for test quality, but a bad positive one.
+Coverage metrics are a good negative indicator for test quality, but a bad positive one.
 
 #### Curly Braces
 
-Curly braces count. 75% of 4 lines covered.
+Curly braces count.
 
 ```cpp
 bool IsStringLong(const std::string& input) {
@@ -34,18 +34,21 @@ TEST(IsStringLong, ShortString) {
 }
 ```
 
+75% of 4 lines covered.
+
 #### Refactoring
 
-Refactoring can be used to "game" coverage by condensing the code. 100% of 1 line is covered, with
-no change to behavior.
+Refactoring can be used to "game" coverage by condensing the code.
 
 ```cpp
 bool IsStringLong(const std::string& input) { return input.length() > 5; }
 ```
 
+100% of 1 line covered.
+
 #### Test Quality
 
-100% of 4 lines are covered, for what?
+Coverage metrics say nothing about the quality of the test.
 
 ```cpp
 bool IsStringLong(const std::string& input) {
@@ -62,10 +65,11 @@ TEST(IsStringLong, ShortString) {
 }
 ```
 
+100% of 4 lines covered.
+
 #### External Dependencies
 
-Coverage metrics do not include external libraries. Though nowhere close to being exhaustive, 100% 
-of 1 line is covered.
+Coverage metrics do not include coverage of external libraries.
 
 ```cpp
 int Parse(const std::string& input) { return std::atoi(input.c_str()); }
@@ -76,7 +80,7 @@ TEST(IsStringLong, ShortString) {
 }
 ```
 
-
+100% of 1 line covered.
 
 {{% notice tip %}}
 **Hospital Analogy** - Temperature is another good negative indicator, but a bad positive indicator. 
@@ -91,20 +95,26 @@ a patients temperature while focusing on the root cause of the illness.
 A successful test suite has the following properties:
 
 1. Integrated into the development cycle.
-1. Targets only the most important parts of the code base: the domain logic.
-1. Provides maximum value with minimum maintenance costs.
+2. Targets only the most important parts of the code base.
+3. Provides maximum value with minimum maintenance costs.
 
-Enforcing test quality is a tough problem; one that requires personal judgement.
+Enforcing test quality is a tough problem; one that requires personal judgement and skill.
 
-## Test Dependencies
+## Dependency Classification
 
-Dependencies may be shared or private, and mutable or immutable.
+Dependencies may be shared or private; mutable or immutable; internal or external.
 
-- **Private** - Lifetime is managed by the test; includes local variables.
-- **Shared** -  Lifetime is not managed by the test; includes global variables and out-of-process 
-  state.
-- **Immutable** - State never changes over the course of the test.
-- **Mutable** - State may change over the course of the test.
+- **Private** - Managed and consumed exclusively by the executable.
+- **Shared** -  Managed and/or consumed by another executable.
+- **Immutable** - State cannot change in the lifetime of the executable.
+- **Mutable** - State may change in the lifetime of the executable.
+- **Internal** - Exists within the executable.
+- **External** Exists outside the executable.
+
+{{% notice note %}}
+Executable in this context may refer to a production application or a test executable containing a
+suite of test(s).
+{{% /notice %}}
 
 ## Test Isolation
 
@@ -118,7 +128,7 @@ Varying degrees of isolation can be used when writing tests:
 #### Granularity
 
 Heavy isolation helps increase granularity. However, it is easy to fall into the trap of testing
-*code* instead of *behavior*. 
+*implementation details* instead of *behavior*. 
 
 {{% notice warning %}}
 ```
@@ -152,13 +162,13 @@ cascades of failing tests. However, this issue can be mitigated by running tests
 ## Test Structure
 
 - *Arrange*, *Act*, then *Assert* (AAA).
-- Watch out for *Act* and *Assert* sections larger than one line, which may indicate: 
-  - Test verifies more than one behavior and needs to be split.
-  - Multiple outcomes need checking, a.k.a *invariant violation*.
+- Watch out for *Act* and *Assert* sections larger than one line, which may indicate the test: 
+  - Verifies more than one behavior and needs to be split.
+  - Requires verification of more than one outcome, a.k.a *invariant violation*.
 - *Arrange* sections should not be placed inside test fixtures. Doing so:
   - Introduces coupling between tests.
   - Decreases readability.
-- Simplify tedious *Arrange* sections with the factory pattern.
+- Simplify tedious *Arrange* sections with the *factory pattern*.
 - Avoid using conditional logic, including loop conditions.
 - Name tests using plain english, describing behavior from the perspective of a business expert.
 - Tests that verify the same behavior with different values may be parameterized, but never at the

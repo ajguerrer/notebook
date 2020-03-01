@@ -7,12 +7,12 @@ weight: 3
 
 Integration tests verify:
 
-- Interactions with out-of-process dependencies.
-- Edge cases unsuitable for a unit tests.
+- Interactions with external dependencies.
+- Edge cases unsuitable for a unit test.
 
-Each integration test should choose a happy path route that tests the most out-of-process 
-dependencies while still testing a single use case. If a single integration test won't do, write
-more until all out-of-process dependencies are covered.
+Each integration test should choose a happy path that exercises as many shared external dependencies 
+as possible while staying within a single use case. If a single integration test doesn't cover all 
+shared external dependencies, write more until all external dependencies are covered.
 
 {{% notice tip %}}
 To keep maintenance costs low, check as many edge cases as possible with unit tests before resorting 
@@ -32,12 +32,12 @@ controllers.
 #### Interfaces
 
 Genuine abstractions are *discovered*, not *invented*. For an interface to be genuine, it must have 
-at least two implementations. Otherwise, the cost to the reader and the writer isn't worth it.
+at least two implementations. Otherwise, the the added cognitive complexity isn't worth it.
 
-Interfaces enable mocking. Write an interface to mock shared out-of-process dependencies. 
-However, not all out-of-process dependencies need an interface. Private out-of-process dependencies 
-don't need mocks and therefore don't benefit from an interface, unless they can be swapped for 
-another implementation.
+Interfaces enable mocking. Write an interface to mock shared external dependencies. 
+However, not all external dependencies need an interface. Private external dependencies 
+don't need mocks and therefore don't benefit from an interface, unless there is a need to be to swap
+them with another implementation in production.
 
 #### Layering
 
@@ -61,41 +61,41 @@ Since *Support* logging is observable behavior, it is worth the testing effort. 
 logging, however, is an implementation detail and isn't worth testing.
 
 {{% notice note %}}
-The Domain layer should not have dependencies, including loggers. Have the Controller layer inject a 
-logger, or have the Domain layer emit a log event.
+The Domain layer should not have dependencies, including loggers. The Controller layer may inject a 
+logger, or the Domain layer may emit a log event.
 {{% /notice %}}
 
 Effective logging maximizes the signal to noise ratio. *Support* logging cannot be controlled 
 because its a business requirement, but *Diagnostic* logging can. Minimize diagnostic logging
-in the Domain layer, only adding it for debugging and the subsequently removing it once finished.
+in the Domain layer, only adding it for debugging and then subsequently removing it once finished.
 
 ## Mocking Best Practices
 
 - **Mocks are for integration tests only** - Mentioned in 
   [Hexagonal Architecture](/unit-testing/making_tests_work/#hexagonal-architecture), only shared 
-  out-of-process dependencies should be mocked. Since unit tests don't involve out-of-process 
-  dependencies, only integration tests should make use of mocks.
-- **Never mock private out-of-process dependencies** - When a private out-of-process dependency is too 
+  external dependencies should be mocked. Unit tests target the Domain layer which shouldn't
+  communicate with external dependencies.
+- **Never mock private external dependencies** - When a private external dependency is too 
   difficult or prohibitive to setup, don't try to mock it out. If that dependency cannot be tested 
   as-is, it defeats the point of integration testing and should not be tested at all.
-- **Mock the furthest edges of the system** - Mock the type that directly communicates with the 
-  shared dependency, not the wrapper. Verify the message sent to the shared dependency, not the call
+- **Mock the furthest edges of the system** - Mock the type that directly communicates with a 
+  shared dependency, not the wrapper. Verify the message sent to a shared dependency, not a call
   to a class you wrote. Doing so maximizes resistance against regressions.
 - **Use as many mocks as necessary per test** -  One mock per test is a common misconception. It's 
   irrelevant how many mocks it takes to verify one unit of behavior. The number of mocks depends
-  solely on the number of shared out-of-process dependencies participating in the unit of behavior.
+  solely on the number of shared external dependencies participating in the unit of behavior.
 - **Verify the absence of unexpected messages too** - It is not enough to verify your system is 
-  sending the correct messages to shared out-of-process dependencies, unexpected messages are a
+  sending the correct messages to shared external dependencies, unexpected messages are a
   source of bugs too.
-- **Mock only the types you own** - When using a third party library that communicates with a shared
-  out-of-process dependency, write a adapter for it and mock the adapter instead. Third-party 
-  libraries have arcane inner workings; it's futile to try to emulate their behavior.
+- **Mock only the types you own** - If your using a third party library to communicate with a shared
+  external dependency, write a adapter for it and mock the adapter instead. Third-party 
+  libraries have arcane inner workings, so it's futile to try to emulate their behavior.
 
 ## Testing the Database
 
 #### Setup
 
-Be able to build the database from a series of migration scripts checked into source control. This 
+Be able to build your database from a series of migration scripts checked into source control. This 
 includes tables, views, indexes, stored procedures, reference data and anything else critical to 
 run the database in production.
 
@@ -111,7 +111,7 @@ one prevents data loss.
 #### Transactions
 
 Transactions are capable of updating sets of data within the same business operation atomically. 
-When transactions are involved, applications make two separate types of decisions:
+When transactions are involved, applications need to make two separate types of decisions:
 
 1. Which data gets updated to what?
 2. Should a set of updates be kept or rolled back?
@@ -135,7 +135,7 @@ To replicate the production environment as closely as possible, integration test
 
 There are many ways to cleanup a database between tests:
 
-- **Restore a backup database before each test** - Works, but slow.
+- **Restore a backup database before each test** - Works, but is slow.
 - **Cleanup data at the end of the test** - Might be skipped when test fails.
 - **Wrap each test in a transaction and then don't commit** - Makes behavior between production and 
   testing inconsistent.
@@ -143,10 +143,11 @@ There are many ways to cleanup a database between tests:
  
 #### Best Practices
 
-- **Avoid in-memory databases** - Makes behavior between production and testing inconsistent.
+- **Avoid in-memory databases** - Behavior between production and testing should be consistent.
 - **Reuse code in test sections** - *Arrange* with factory or builder pattern, *act* with decorator
   pattern, and *assert* with handmade mocks (a.k.a. Spys).
 - **Skip trivial database read tests** - Writes are always important because the alter the state of
-  the database. Test reads that are important or complex; disregard the rest.
+  the database. Reads that important or complex should be tested; disregard the rest.
 - **Don't test repositories directly** - Repositories are a controller, so they shouldn't be 
-  complex. They should be tested in an integration test like any other controller. 
+  complex. The point of an integration test is to cover shared, external dependencies, not 
+  controllers.

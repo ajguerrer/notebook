@@ -82,6 +82,7 @@ float PriceCalculator::Calculate(Customer customer,
 
 Its tempting to add a way to access internal state for the sake of testing.
 
+{{% notice warning %}}
 ```cpp
 enum class CustomerStatus {
   kRegular,
@@ -99,9 +100,31 @@ class Customer {
   CustomerStatus status_;
 };
 ```
+{{% /notice %}}
 
 However exposing state will leak implementation details. Instead, look at how the production code 
-uses the class. 
+uses the class and test accordingly.
+
+{{% notice tip %}}
+```cpp
+class Customer {
+ public:
+  Customer(double starting_)
+  void Promote() { status_ = CustomerStatus::kPreferred; }
+
+ private:
+  CustomerStatus status_;
+};
+
+TEST(Customer, PromotedCustomerReceivesDiscount) {
+  Customer customer;
+  customer.Promote();
+  Product<kFujiApple> apple;
+  customer.Purchase(apple);
+  EXPECT_LT(customer.Balance(), apple.Price());
+}
+```
+{{% /notice %}}
 
 ### Don't leak domain knowledge to tests
 
@@ -138,7 +161,7 @@ TEST(Calculator, Add) {
 
 ### Don't add production code for tests only
 
-Mixing testing code with production code only adds to maintenance costs.
+Mixing test code with production code only adds to maintenance costs.
 
 {{% notice warning %}}
 ```cpp
@@ -207,10 +230,14 @@ class CustomerController {
  private:
   StatisticsCalculator calculator_;
 };
+```
+{{% /notice %}}
 
+{{% notice warning %}}
+```cpp
 std::vector<DeliveryRecord> StatisticsCalculator::GetDeliveries(
     int customer_id) {
-  /* Call an out-of-process dependency to get the list of deliveries */
+  /* Call an external dependency to get the list of deliveries */
   return std::vector<DeliveryRecord>{};
 }
 
@@ -273,7 +300,11 @@ class CustomerController {
   StatisticsCalculator calculator_;
   std::unique_ptr<DeliveryGateway> gateway_;
 };
+```
+{{% /notice %}}
 
+{{% notice tip %}}
+```cpp
 std::string CustomerController::GetStatistics(int customer_id) {
   const std::vector<DeliveryRecord> records =
       gateway_->GetDeliveries(customer_id);
